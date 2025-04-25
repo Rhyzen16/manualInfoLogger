@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QRZ Contact Logger</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e9eef3;
+      padding: 2rem;
+    }
+    .form-container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.3rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #5865f2;
+      color: white;
+      padding: 1rem;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4752c4;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Log a Contact (QRZ Style)</h2>
+    <form id="qrzForm">
+      <label for="callsign">Callsign:</label>
+      <input type="text" id="callsign" required />
+
+      <label for="datetime">Date & Time (UTC):</label>
+      <input type="datetime-local" id="datetime" required />
+
+      <label for="band">Band:</label>
+      <select id="band" required>
+        <option value="">Select band</option>
+        <option>160m</option><option>80m</option><option>40m</option>
+        <option>30m</option><option>20m</option><option>17m</option>
+        <option>15m</option><option>12m</option><option>10m</option>
+        <option>6m</option><option>2m</option><option>70cm</option>
+      </select>
+
+      <label for="frequency">Frequency (MHz):</label>
+      <input type="text" id="frequency" placeholder="e.g. 14.250" />
+
+      <label for="mode">Mode:</label>
+      <select id="mode" required>
+        <option value="">Select mode</option>
+        <option>SSB</option><option>CW</option><option>AM</option>
+        <option>FM</option><option>FT8</option><option>RTTY</option>
+        <option>PSK31</option>
+      </select>
+
+      <label for="rst_sent">RST Sent:</label>
+      <input type="text" id="rst_sent" placeholder="e.g. 59" />
+
+      <label for="rst_recv">RST Received:</label>
+      <input type="text" id="rst_recv" placeholder="e.g. 59" />
+
+      <label for="operator">Operator Name:</label>
+      <input type="text" id="operator" />
+
+      <label for="qth">QTH (Location):</label>
+      <input type="text" id="qth" />
+
+      <label for="grid">Grid Locator:</label>
+      <input type="text" id="grid" placeholder="e.g. FN31pr" />
+
+      <label for="qsl">QSL Sent/Received:</label>
+      <select id="qsl">
+        <option value="None">None</option>
+        <option value="Requested">Requested</option>
+        <option value="Sent">Sent</option>
+        <option value="Received">Received</option>
+      </select>
+
+      <label for="notes">Notes:</label>
+      <textarea id="notes" rows="3"></textarea>
+
+      <button type="submit">Log Contact</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("qrzForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        Callsign: document.getElementById("callsign").value,
+        DateTime: document.getElementById("datetime").value,
+        Band: document.getElementById("band").value,
+        Frequency: document.getElementById("frequency").value,
+        Mode: document.getElementById("mode").value,
+        RST_Sent: document.getElementById("rst_sent").value,
+        RST_Received: document.getElementById("rst_recv").value,
+        Operator: document.getElementById("operator").value,
+        QTH: document.getElementById("qth").value,
+        Grid: document.getElementById("grid").value,
+        QSL: document.getElementById("qsl").value,
+        Notes: document.getElementById("notes").value
+      };
+
+      const webhookUrl = "YOUR_DISCORD_WEBHOOK_URL"; // Replace this
+
+      const message = {
+        content: `**New QRZ Contact Logged**\n` +
+                 `**Callsign:** ${data.Callsign}\n` +
+                 `**Date/Time:** ${data.DateTime}\n` +
+                 `**Band:** ${data.Band}\n` +
+                 `**Frequency:** ${data.Frequency}\n` +
+                 `**Mode:** ${data.Mode}\n` +
+                 `**RST Sent/Received:** ${data.RST_Sent}/${data.RST_Received}\n` +
+                 `**Operator:** ${data.Operator || "N/A"}\n` +
+                 `**QTH:** ${data.QTH || "N/A"}\n` +
+                 `**Grid:** ${data.Grid || "N/A"}\n` +
+                 `**QSL:** ${data.QSL}\n` +
+                 `**Notes:** ${data.Notes || "None"}`
+      };
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(message)
+        });
+
+        if (response.ok) {
+          alert("Contact successfully logged!");
+          form.reset();
+        } else {
+          alert("Failed to log contact.");
+        }
+      } catch (error) {
+        alert("Error sending to Discord.");
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
