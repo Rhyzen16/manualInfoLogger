@@ -7,16 +7,17 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #e9eef3;
+      background: #121212;
+      color: #ffffff;
       padding: 2rem;
     }
     .form-container {
       max-width: 700px;
       margin: auto;
-      background: #fff;
+      background: #1e1e1e;
       padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
     h2 {
       text-align: center;
@@ -32,8 +33,10 @@
       padding: 0.7rem;
       margin-top: 0.3rem;
       margin-bottom: 1rem;
-      border: 1px solid #ccc;
+      border: 1px solid #333;
       border-radius: 5px;
+      background: #2a2a2a;
+      color: #fff;
     }
     button {
       background-color: #5865f2;
@@ -52,7 +55,7 @@
 </head>
 <body>
   <div class="form-container">
-    <h2>Log a Contact (QRZ Style)</h2>
+    <h2>Log a Contact</h2>
     <form id="qrzForm">
       <label for="callsign">Callsign:</label>
       <input type="text" id="callsign" required />
@@ -61,24 +64,13 @@
       <input type="datetime-local" id="datetime" required />
 
       <label for="band">Band:</label>
-      <select id="band" required>
-        <option value="">Select band</option>
-        <option>160m</option><option>80m</option><option>40m</option>
-        <option>30m</option><option>20m</option><option>17m</option>
-        <option>15m</option><option>12m</option><option>10m</option>
-        <option>6m</option><option>2m</option><option>70cm</option>
-      </select>
+      <input type="text" id="band" placeholder="e.g. 20m" required />
 
       <label for="frequency">Frequency (MHz):</label>
       <input type="text" id="frequency" placeholder="e.g. 14.250" />
 
       <label for="mode">Mode:</label>
-      <select id="mode" required>
-        <option value="">Select mode</option>
-        <option>SSB</option><option>CW</option><option>AM</option>
-        <option>FM</option><option>FT8</option><option>RTTY</option>
-        <option>PSK31</option>
-      </select>
+      <input type="text" id="mode" placeholder="e.g. SSB" required />
 
       <label for="rst_sent">RST Sent:</label>
       <input type="text" id="rst_sent" placeholder="e.g. 59" />
@@ -95,13 +87,8 @@
       <label for="grid">Grid Locator:</label>
       <input type="text" id="grid" placeholder="e.g. FN31pr" />
 
-      <label for="qsl">QSL Sent/Received:</label>
-      <select id="qsl">
-        <option value="None">None</option>
-        <option value="Requested">Requested</option>
-        <option value="Sent">Sent</option>
-        <option value="Received">Received</option>
-      </select>
+      <label for="qsl">QSL Status:</label>
+      <input type="text" id="qsl" placeholder="e.g. Sent / Received / Requested" />
 
       <label for="notes">Notes:</label>
       <textarea id="notes" rows="3"></textarea>
@@ -134,17 +121,17 @@
       const webhookUrl = "https://discord.com/api/webhooks/1365322409917546516/PFxgAb0a-8PHEne5EtcDTMMq230trkg_1oNAvMMnuhhlF0qO20QpI7Bs6msWG0RS2aY1";
 
       const message = {
-        content: `**New QRZ Contact Logged**\n` +
+        content: `**New Contact Logged**\n` +
                  `**Callsign:** ${data.Callsign}\n` +
-                 `**Date/Time:** ${data.DateTime}\n` +
+                 `**Date/Time (UTC):** ${data.DateTime}\n` +
                  `**Band:** ${data.Band}\n` +
                  `**Frequency:** ${data.Frequency}\n` +
                  `**Mode:** ${data.Mode}\n` +
-                 `**RST Sent/Received:** ${data.RST_Sent}/${data.RST_Received}\n` +
+                 `**RST (Sent/Received):** ${data.RST_Sent} / ${data.RST_Received}\n` +
                  `**Operator:** ${data.Operator || "N/A"}\n` +
                  `**QTH:** ${data.QTH || "N/A"}\n` +
                  `**Grid:** ${data.Grid || "N/A"}\n` +
-                 `**QSL:** ${data.QSL}\n` +
+                 `**QSL:** ${data.QSL || "N/A"}\n` +
                  `**Notes:** ${data.Notes || "None"}`
       };
 
