@@ -2,137 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QRZ Contact Logger</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #ffffff;
-      padding: 2rem;
-    }
-    .form-container {
-      max-width: 700px;
-      margin: auto;
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.7rem;
-      margin-top: 0.3rem;
-      margin-bottom: 1rem;
-      border: 1px solid #333;
-      border-radius: 5px;
-      background: #2a2a2a;
-      color: #fff;
-    }
-    button {
-      background-color: #5865f2;
-      color: white;
-      padding: 1rem;
-      border: none;
-      width: 100%;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #4752c4;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="form-container">
-    <h2>Log a Contact</h2>
-    <form id="qrzForm">
-      <label for="callsign">Callsign:</label>
-      <input type="text" id="callsign" required />
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6 relative">
 
-      <label for="datetime">Date & Time (UTC):</label>
-      <input type="datetime-local" id="datetime" required />
+  <div id="toast" class="hidden fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg z-50">
+    Contact successfully logged!
+  </div>
 
-      <label for="band">Band:</label>
-      <input type="text" id="band" placeholder="e.g. 20m" required />
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg">
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Log Your Contact</h2>
 
-      <label for="frequency">Frequency (MHz):</label>
-      <input type="text" id="frequency" placeholder="e.g. 14.250" />
+    <form id="qrzForm" class="space-y-4">
+      <div>
+        <label for="callsign" class="block text-sm font-medium text-gray-700">Callsign *</label>
+        <input type="text" id="callsign" required class="form-input" />
+      </div>
 
-      <label for="mode">Mode:</label>
-      <input type="text" id="mode" placeholder="e.g. SSB" required />
+      <div>
+        <label for="datetime" class="block text-sm font-medium text-gray-700">Date & Time (UTC) *</label>
+        <input type="datetime-local" id="datetime" required class="form-input" />
+      </div>
 
-      <label for="rst_sent">RST Sent:</label>
-      <input type="text" id="rst_sent" placeholder="e.g. 59" />
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="band" class="block text-sm font-medium text-gray-700">Band *</label>
+          <input type="text" id="band" required placeholder="20m" class="form-input" />
+        </div>
+        <div>
+          <label for="mode" class="block text-sm font-medium text-gray-700">Mode *</label>
+          <input type="text" id="mode" required placeholder="SSB" class="form-input" />
+        </div>
+      </div>
 
-      <label for="rst_recv">RST Received:</label>
-      <input type="text" id="rst_recv" placeholder="e.g. 59" />
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="rst_sent" class="block text-sm font-medium text-gray-700">RST Sent *</label>
+          <input type="text" id="rst_sent" required placeholder="59" class="form-input" />
+        </div>
+        <div>
+          <label for="rst_recv" class="block text-sm font-medium text-gray-700">RST Received *</label>
+          <input type="text" id="rst_recv" required placeholder="59" class="form-input" />
+        </div>
+      </div>
 
-      <label for="operator">Operator Name:</label>
-      <input type="text" id="operator" />
+      <div>
+        <label for="qth" class="block text-sm font-medium text-gray-700">QTH (Location)</label>
+        <input type="text" id="qth" placeholder="Optional" class="form-input" />
+      </div>
 
-      <label for="qth">QTH (Location):</label>
-      <input type="text" id="qth" />
+      <div>
+        <label for="grid" class="block text-sm font-medium text-gray-700">Grid Locator</label>
+        <input type="text" id="grid" placeholder="FN31pr" class="form-input" />
+      </div>
 
-      <label for="grid">Grid Locator:</label>
-      <input type="text" id="grid" placeholder="e.g. FN31pr" />
+      <div>
+        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+        <textarea id="notes" rows="3" placeholder="Optional" class="form-input"></textarea>
+        <div class="text-xs text-gray-500 mt-1" id="notesCounter">0 / 500 characters</div>
+      </div>
 
-      <label for="qsl">QSL Status:</label>
-      <input type="text" id="qsl" placeholder="e.g. Sent / Received / Requested" />
-
-      <label for="notes">Notes:</label>
-      <textarea id="notes" rows="3"></textarea>
-
-      <button type="submit">Log Contact</button>
+      <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 transition">
+        Submit Contact
+      </button>
     </form>
   </div>
 
+  <!-- This will display the copy of the last submission -->
+  <div id="logCopy" class="hidden bg-white mt-8 p-6 rounded-2xl shadow-xl w-full max-w-lg">
+    <h3 class="text-xl font-bold mb-4 text-gray-700">Last Submitted Contact</h3>
+    <div id="logContent" class="space-y-2 text-gray-800 text-sm"></div>
+  </div>
+
   <script>
+    // Add Tailwind form styles
+    document.querySelectorAll('.form-input').forEach(input => {
+      input.classList.add('mt-1', 'block', 'w-full', 'rounded-md', 'border-gray-300', 'shadow-sm', 'focus:ring-indigo-500', 'focus:border-indigo-500');
+    });
+
+    // Autofill UTC datetime
+    function setUTCDateTime() {
+      const now = new Date();
+      const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+      document.getElementById('datetime').value = utcNow.toISOString().slice(0, 16);
+    }
+    setUTCDateTime();
+
     const form = document.getElementById("qrzForm");
+    const toast = document.getElementById("toast");
+    const logCopy = document.getElementById("logCopy");
+    const logContent = document.getElementById("logContent");
+    const notes = document.getElementById("notes");
+    const notesCounter = document.getElementById("notesCounter");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      let valid = true;
+      form.querySelectorAll('input[required]').forEach(input => {
+        if (!input.value.trim()) {
+          input.classList.add('border-red-500');
+          valid = false;
+        } else {
+          input.classList.remove('border-red-500');
+        }
+      });
+
+      if (!valid) {
+        alert("Please fill out all required fields correctly.");
+        return;
+      }
+
       const data = {
-        Callsign: document.getElementById("callsign").value,
+        Callsign: document.getElementById("callsign").value.trim(),
         DateTime: document.getElementById("datetime").value,
-        Band: document.getElementById("band").value,
-        Frequency: document.getElementById("frequency").value,
-        Mode: document.getElementById("mode").value,
-        RST_Sent: document.getElementById("rst_sent").value,
-        RST_Received: document.getElementById("rst_recv").value,
-        Operator: document.getElementById("operator").value,
-        QTH: document.getElementById("qth").value,
-        Grid: document.getElementById("grid").value,
-        QSL: document.getElementById("qsl").value,
-        Notes: document.getElementById("notes").value
+        Band: document.getElementById("band").value.trim(),
+        Mode: document.getElementById("mode").value.trim(),
+        RST_Sent: document.getElementById("rst_sent").value.trim(),
+        RST_Received: document.getElementById("rst_recv").value.trim(),
+        QTH: document.getElementById("qth").value.trim(),
+        Grid: document.getElementById("grid").value.trim(),
+        Notes: notes.value.trim()
       };
 
       const webhookUrl = "https://discord.com/api/webhooks/1365322409917546516/PFxgAb0a-8PHEne5EtcDTMMq230trkg_1oNAvMMnuhhlF0qO20QpI7Bs6msWG0RS2aY1";
 
       const message = {
         content: `**New Contact Logged**\n` +
-                 `**Callsign:** ${data.Callsign}\n` +
-                 `**Date/Time (UTC):** ${data.DateTime}\n` +
-                 `**Band:** ${data.Band}\n` +
-                 `**Frequency:** ${data.Frequency}\n` +
-                 `**Mode:** ${data.Mode}\n` +
-                 `**RST (Sent/Received):** ${data.RST_Sent} / ${data.RST_Received}\n` +
-                 `**Operator:** ${data.Operator || "N/A"}\n` +
-                 `**QTH:** ${data.QTH || "N/A"}\n` +
-                 `**Grid:** ${data.Grid || "N/A"}\n` +
-                 `**QSL:** ${data.QSL || "N/A"}\n` +
-                 `**Notes:** ${data.Notes || "None"}`
+          `> **Callsign:** ${data.Callsign}\n` +
+          `> **Date/Time (UTC):** ${data.DateTime}\n` +
+          `> **Band:** ${data.Band}\n` +
+          `> **Mode:** ${data.Mode}\n` +
+          `> **RST Sent/Received:** ${data.RST_Sent} / ${data.RST_Received}\n` +
+          (data.QTH ? `> **QTH:** ${data.QTH}\n` : '') +
+          (data.Grid ? `> **Grid Locator:** ${data.Grid}\n` : '') +
+          (data.Notes ? `> **Notes:** ${data.Notes}\n` : '')
       };
 
       try {
@@ -143,8 +149,10 @@
         });
 
         if (response.ok) {
-          alert("Contact successfully logged!");
           form.reset();
+          setUTCDateTime();
+          showToast();
+          displayLogCopy(data);
         } else {
           alert("Failed to log contact.");
         }
@@ -153,6 +161,42 @@
         console.error(error);
       }
     });
+
+    function showToast() {
+      toast.classList.remove('hidden');
+      toast.classList.add('animate-bounce');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('animate-bounce');
+      }, 2500);
+    }
+
+    function displayLogCopy(data) {
+      logContent.innerHTML = `
+        <p><strong>Callsign:</strong> ${data.Callsign}</p>
+        <p><strong>Date/Time (UTC):</strong> ${data.DateTime}</p>
+        <p><strong>Band:</strong> ${data.Band}</p>
+        <p><strong>Mode:</strong> ${data.Mode}</p>
+        <p><strong>RST Sent:</strong> ${data.RST_Sent}</p>
+        <p><strong>RST Received:</strong> ${data.RST_Received}</p>
+        ${data.QTH ? `<p><strong>QTH:</strong> ${data.QTH}</p>` : ''}
+        ${data.Grid ? `<p><strong>Grid Locator:</strong> ${data.Grid}</p>` : ''}
+        ${data.Notes ? `<p><strong>Notes:</strong> ${data.Notes}</p>` : ''}
+      `;
+      logCopy.classList.remove('hidden');
+    }
+
+    // Live character counter for Notes
+    notes.addEventListener('input', () => {
+      const count = notes.value.length;
+      notesCounter.textContent = `${count} / 500 characters`;
+      if (count > 500) {
+        notesCounter.classList.add('text-red-500');
+      } else {
+        notesCounter.classList.remove('text-red-500');
+      }
+    });
   </script>
+
 </body>
 </html>
